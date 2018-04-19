@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html ng-app="exptoolset">
+    <head>
+        <meta charset="utf-8">
+        <title>大物实验数据处理</title>
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+        <script src="/static/js/jquery-3.3.1.min.js"></script>
+        <script src="/static/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="/static/js/procedure.js"></script>
+    </head>
+    <body>
+        <main role="main" class="container">
+            <div class="row">
+                <div class="offset-md-2 col-md-8">
+                    <form id="form-equations">
+                        <div class="form-group">
+                            <label for="equations-input" class="alert alert-info col-md-12">请用Latex表示运算过程的公式，一行一个，按照依赖顺序写出，方程左边只能有一个变量。</label>
+                            <textarea id="equations-input" name="equations-input" class="form-control" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-10">
+                                <button type="submit" class="btn btn-primary">分析方程</button>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div id="error-info-equations" class="col-md-12 alert alert-danger" style="display: none"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="offset-md-2 col-md-8" id="equations-show"></div>
+            <div class="row" id="variables" style="display: none">
+                <div class="offset-md-2 col-md-1">
+                    <span class="badge badge-primary">自由变量</span>
+                    <ul id="free-variables" class="nav flex-column nav-pills">
+                    </ul>
+                    <span class="badge badge-success">中间变量</span>
+                    <ul id="intermediate-variables" class="nav flex-column nav-pills">
+                    </ul>
+                </div>
+                <div class="col-md-7">
+                    <form id="form-free-variable" style="display: none">
+                        <div class="form-group row">
+                            <label for="variable-type" class="col-md-3 col-form-label">类型</label>
+                            <div class="col-md-9">
+                                <select type="text" class="form-control" id="variable-type" name="variable-type">
+                                    <option value="measure">测量的量</option>
+                                    <option value="constant">常数</option>
+                                    <option value="know-uncertainty">已知不确定度的量</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="measure">
+                            <div class="form-group row">
+                                <label for="instrument" class="col-md-3 col-form-label">测量仪器</label>
+                                <div class="col-md-9">
+                                    <select class="form-control" id="instrument" name="instrument">
+                                        <option value="wood_ruler1">木尺（量程30~50cm, 最小分度值1mm）</option>
+                                        <option value="wood_ruler2">木尺（量程60~100cm, 最小分度值1mm）</option>
+                                        <option value="metal_ruler1">钢板尺（量程150mm, 最小分度值1mm）</option>
+                                        <option value="metal_ruler2">钢板尺（量程500mm, 最小分度值1mm）</option>
+                                        <option value="metal_ruler3">钢板尺（量程1m, 最小分度值1mm）</option>
+                                        <option value="metal_tape1">钢卷尺（量程1m, 最小分度值1mm）</option>
+                                        <option value="metal_tape2">钢卷尺（量程2m, 最小分度值1mm）</option>
+                                        <option value="caliper1">游标卡尺（量程125mm, 最小分度值0.02mm）</option>
+                                        <option value="caliper2">游标卡尺（量程300mm, 最小分度值0.05mm）</option>
+                                        <option value="micrometer">螺旋测微器</option>
+                                        <option value="physical_balance1">物理天平（量程500g, 接近满量程）</option>
+                                        <option value="physical_balance2">物理天平（量程500g，1/2量程附近</option>
+                                        <option value="physical_balance3">物理天平（量程500g，1/3量程和以下</option>
+                                        <option value="analytical_balance1">分析天平（量程200g，接近满量程</option>
+                                        <option value="analytical_balance2">分析天平（量程200g，1/2量程附近</option>
+                                        <option value="analytical_balance3">分析天平（量程200g，1/3量程和以下</option>
+                                        <option value="custom">自定义测量仪器</option>>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="measure-custom" class="form-group row" style="display: none">
+                                <label for="deltab" class="col-md-3 col-form-label">最大允差</label>
+                                <div class="col-md-3">
+                                    <input type="number" class="form-control" id="deltab" min="0" step="any" name=" deltab">
+                                </div>
+                                <label for="C" class="col-md-2 col-form-label">C值</label>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" id="C" min="0" step="any" value="3" name="C ">
+                                </div>
+                            </div>
+                            <div id="measure-unit-group" class="form-group row">
+                                <label for="measure-unit" class="col-md-3 col-form-label">单位</label>
+                                <div class="col-md-9">
+                                    <select id="measure-unit" class="form-control" name="measure-unit"></select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="data" class="col-md-3 col-form-label">数据（逗号分隔）</label>
+                                <div class="col-md-9">
+                                    <textarea type="text" class="form-control" id="data" name="data" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="constant">
+                            <div id="constant-unit-group" class="form-group row">
+                                <label for="constant-unit" class="col-md-3 col-form-label">单位</label>
+                                <div class="col-md-9">
+                                    <input type="text" id="constant-unit" class="form-control" name="constant-unit" placeholder="用*连接，不要用/，比如用m*s^-1而非m/s，留空为无单位">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="value" class="col-md-3 col-form-label">数值</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" id="value" name="value" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="uncertainty">
+                            <div class="form-group row">
+                                <label for="uncertainty-value" class="col-md-3 col-form-label">不确定度</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" id="uncertainty-value" name="uncertainty-value" required>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form id="form-intermediate-variable" style="display: none">
+                        <div id="intermediate-unit-group" class="form-group row">
+                            <label for="intermediate-unit" class="col-md-3 col-form-label">单位</label>
+                            <div class="col-md-9">
+                                <input type="text" id="intermediate-unit" class="form-control" name="intermediate-unit" placeholder="用*连接，不要用/，比如用m*s^-1而非m/s，留空为无单位">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="offset-md-2 col-md-8">
+                    <form id="form-final" style="display: none">
+                        <div class="form-group row">
+                            <label for="p" class="col-md-2 col-form-label">置信概率</label>
+                            <div class="col-md-10">
+                                <input type="number" class="form-control" id="p" min="0" max="1" step="any" name="p" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="check-unit" class="col-md-2 col-form-label">检查单位</label>
+                            <div class="col-md-10">
+                                <input type="checkbox" class="form-control" id="check-unit" checked>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-10">
+                                <button type="submit" class="btn btn-primary">生成数据处理过程</button>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div id="error-info-result" class="col-md-12 alert alert-danger" style="display: none"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="offset-md-1 col-md-10" id="result"></div>
+        </main>
+    </body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html ng-app="exptoolset">
+    <head>
+        <meta charset="utf-8">
+        <title>测量不确定度</title>
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+        <script src="/static/js/jquery-3.3.1.min.js"></script>
+        <script src="/static/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="/static/js/uncertainty.js"></script>
+    </head>
+    <body>
+        <main role="main" class="container">
+            <div class="row">
+                <div class="offset-md-2 col-md-8">
+                    <form id="form">
+                        <div class="form-group row">
+                            <label for="name" class="col-md-3 col-form-label">测量量名称</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="instrument" class="col-md-3 col-form-label">测量仪器</label>
+                            <div class="col-md-9">
+                                <select class="form-control" id="instrument" name="instrument">
+                                    <option value="wood_ruler1">木尺（量程30~50cm, 最小分度值1mm）</option>
+                                    <option value="wood_ruler2">木尺（量程60~100cm, 最小分度值1mm）</option>
+                                    <option value="metal_ruler1">钢板尺（量程150mm, 最小分度值1mm）</option>
+                                    <option value="metal_ruler2">钢板尺（量程500mm, 最小分度值1mm）</option>
+                                    <option value="metal_ruler3">钢板尺（量程1m, 最小分度值1mm）</option>
+                                    <option value="metal_tape1">钢卷尺（量程1m, 最小分度值1mm）</option>
+                                    <option value="metal_tape2">钢卷尺（量程2m, 最小分度值1mm）</option>
+                                    <option value="caliper1">游标卡尺（量程125mm, 最小分度值0.02mm）</option>
+                                    <option value="caliper2">游标卡尺（量程300mm, 最小分度值0.05mm）</option>
+                                    <option value="micrometer">螺旋测微器</option>
+                                    <option value="physical_balance1">物理天平（量程500g, 接近满量程）</option>
+                                    <option value="physical_balance2">物理天平（量程500g，1/2量程附近</option>
+                                    <option value="physical_balance3">物理天平（量程500g，1/3量程和以下</option>
+                                    <option value="analytical_balance1">分析天平（量程200g，接近满量程</option>
+                                    <option value="analytical_balance2">分析天平（量程200g，1/2量程附近</option>
+                                    <option value="analytical_balance3">分析天平（量程200g，1/3量程和以下</option>
+                                    <option value="custom">自定义测量仪器</option>>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="custom" class="form-group row" style="display: none">
+                            <label for="deltab" class="col-md-3 col-form-label">最大允差</label>
+                            <div class="col-md-4">
+                                <input type="number" class="form-control" id="deltab" min="0" step="any" name="deltab">
+                            </div>
+                            <label for="C" class="col-md-1 col-form-label">C值</label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="C" min="0" step="any" value="3" name="C">
+                            </div>
+                        </div>
+                        <div id="unit-group" class="form-group row">
+                            <label for="unit" class="col-md-3 col-form-label">单位</label>
+                            <div class="col-md-9">
+                                <select id="unit" class="form-control" name="unit"></select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="p" class="col-md-3 col-form-label">置信概率</label>
+                            <div class="col-md-9">
+                                <input type="number" class="form-control" id="p" min="0" max="1" step="any" name="p" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="data" class="col-md-3 col-form-label">数据（逗号分隔）</label>
+                            <div class="col-md-9">
+                                <textarea type="text" class="form-control" id="data" name="data" required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-10">
+                                <button type="submit" class="btn btn-primary">生成计算过程</button>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div id="error-info" class="col-md-12 alert alert-danger" style="display: none"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="offset-md-1 col-md-10" id="result"></div>
+        </main>
+    </body>
+</html>
