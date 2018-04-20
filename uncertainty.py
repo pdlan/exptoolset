@@ -33,7 +33,7 @@ def measure_uncertainty(data, measure_instrument, p, unit):
 
 def round_after_point(number, digits):
     fmt = '%%.%df' % digits
-    return fmt % sympy.N(number) 
+    return fmt % decimal.Decimal(str(sympy.N(number)))
 
 def round_for_instrument(number, measure_instrument, unit, extra=0):
     digits = measure_instrument[3] + int(sympy.log(unit.convert_to_si(1), 10)) + extra
@@ -72,8 +72,15 @@ def align_to_uncertainty(value, u, u_accuracy):
         return format(decimal.Decimal(str(sympy.N(value))), 'f')
     s_u = format(decimal.Decimal(str(sympy.N(u, u_accuracy))), 'f')
     point_pos = s_u.find('.')
-    if point_pos == -1 or point_pos == len(s_u) - 1:
-        return '%d' % math.ceil(value)
+    if point_pos == -1:
+        value_integer = '%d' % decimal.Decimal(str(sympy.N(value)))
+        zero_digits = 0
+        for i in range(len(s_u)):
+            if s_u[-(i + 1)] == '0':
+                zero_digits += 1
+            else:
+                break
+        return value_integer[0:len(value_integer) - zero_digits] + '0' * zero_digits
     digits = 0
     for i in range(point_pos + 1, len(s_u)):
         digits += 1
@@ -93,6 +100,8 @@ def remove_end_zero(number, noexp=False):
         s = str(number)
         if s == 'pi' or s == 'E':
             s = str(sympy.N(s, 5))
+    if s.find('.') == -1:
+        return s
     parts = s.split('e')
     res = parts[0]
     while res[-1] == '0' and len(res) > 1:
@@ -136,8 +145,8 @@ def latex_cu_procedure(name, expression, unit, uncertainties, values, p, u_accur
         u_vars[s] = values[s.name]
         if s.name not in uncertainties:
             continue
-        pd_squares.append('\\left(\\frac{\\mathrm{\\partial}%s}{\\mathrm{\\partial}%s}\\right)^2' % (name, s.name))
         u_name = 'U_{%s%s}' % (remove_end_zero(p), s.name)
+        pd_squares.append('\\left(\\frac{\\mathrm{\\partial}%s}{\\mathrm{\\partial}%s}%s\\right)^2' % (name, s.name, u_name))
         u_symbol = sympy.symbols(u_name, positive=True)
         u_symbols[s.name] = u_symbol
         u_vars[u_symbol] = uncertainties[s.name]
@@ -149,6 +158,7 @@ def latex_cu_procedure(name, expression, unit, uncertainties, values, p, u_accur
     u_exp_subs_latex = sub_number(u_exp, u_vars)
     exp_subs_latex = sub_number(expression, u_vars)
     exp_value_str = ''
+    is_exp_sn = False;
     if is_result:
         is_startswith12 = False
         for c in eval_noexp(u_val, 1):
@@ -158,13 +168,17 @@ def latex_cu_procedure(name, expression, unit, uncertainties, values, p, u_accur
                 break
         if not is_startswith12:
             u_accuracy = 1
-        if 'e' in str(sympy.N(exp_value)):
-            v = sympy.S(align_to_uncertainty(exp_value, u_val, u_accuracy))
-            exp_value_str = remove_end_zero(v)
-        else:
-            exp_value_str = align_to_uncertainty(exp_value, u_val, u_accuracy)
+    exp_value_aligned = align_to_uncertainty(exp_value, u_val, u_accuracy)
+    ev_aligned_s = str(sympy.N(sympy.S(exp_value_aligned)))
+    if 'e' in ev_aligned_s:
+        is_exp_sn = True
+        ev_aligned_parts = ev_aligned_s.split('e')
+        if ev_aligned_parts[1][0] == '+':
+            ev_aligned_parts[1] = ev_aligned_parts[1][1:]
+        ev_aligned_parts[0] = remove_end_zero(sympy.S(ev_aligned_parts[0]))
+        exp_value_str = ev_aligned_parts[0] + '\\times10^{%s}' % ev_aligned_parts[1]
     else:
-        exp_value_str = align_to_uncertainty(exp_value, u_val, u_accuracy)
+        exp_value_str = exp_value_aligned
     res = '$$%s=%s=%s%s=%s%s$$\n' % (name, exp_latex, exp_subs_latex, standard_unit.latex, exp_value_str, unit.latex)
     if len(uncertainties) == 0:
         return exp_value, sympy.S('0'), res
@@ -181,9 +195,9 @@ def latex_cu_procedure(name, expression, unit, uncertainties, values, p, u_accur
         u_val_str += '\\times 10^{%s}' % u_val_parts[1]
     res += ' \\\\\n& = %s%s, \\quad P=%s\n\\end{align}\n$$\n' % (u_val_str, unit.latex, remove_end_zero(p))
     if is_result:
-        if 'e' in str(sympy.N(exp_value)):
-            n = exp_value_str.split('\\times')[0]
-            exp = int(str(sympy.N(exp_value)).split('e')[1])
+        if is_exp_sn:
+            n = ev_aligned_parts[0]
+            exp = int(ev_aligned_parts[1])
             u_val_str = eval_noexp(u_val / (10 ** exp), u_accuracy)
             res += '$$\\mathrm{Result:}\\;%s=%s\\pm%s\\times10^{%d}%s' % (name, n, u_val_str, exp, unit.latex)
         else:

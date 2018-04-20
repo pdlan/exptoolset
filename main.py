@@ -152,4 +152,4 @@ def procedure_html_handler():
     return app.send_static_file('procedure.html')
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=8000, threaded=True)

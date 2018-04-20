@@ -227,8 +227,8 @@ function generate() {
                 data['var'] = convert_varname(data['var']);
                 html = '以下变量测量仪器选择错误：：' + data['var'];
             } else if (status === 'inconsistentunit') {
-                data['lhs'] = convert_varname(data['lhs']);
-                html = '以下中间变量和方程右侧量纲不一致，请检查单位设置：：' + data['lhs'];
+                var lhs = convert_varname(intermediate_vars[data['lhs']]);
+                html = '以下中间变量和方程右侧量纲不一致，请检查单位设置：：' + lhs;
             } else {
                 html = '出现错误，请检查各变量的设置';
             }
