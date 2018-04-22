@@ -241,9 +241,7 @@ def check_unit(equations, units):
     for k in units:
         dims[k] = units[k].dim
     for i, eq in enumerate(equations):
-        lhs = None
-        for j in eq.lhs.free_symbols:
-            lhs = j
+        lhs = list(eq.lhs.free_symbols)[0]
         r = eq.rhs.subs(dims) / dims[lhs]
         if not r.is_constant():
             return False, i
@@ -286,9 +284,7 @@ def full_procedure(equations_, measures, values, uncertainties, units, p):
     for k in uncertainties:
         uncertainties_si[k.name] = units[k].convert_to_si(uncertainties[k])
     for i, eq in enumerate(equations):
-        lhs = None
-        for j in eq.lhs.free_symbols:
-            lhs = j
+        lhs = list(eq.lhs_free_symbols)[0]
         for s in eq.rhs.free_symbols:
             if s in full_values:
                 continue

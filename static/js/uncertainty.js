@@ -70,7 +70,6 @@ function generate() {
         },
         error: function (xhr) {
             var data = JSON.parse(xhr.responseText);
-            console.log(data);
             var status = data['status'];
             if (status === 'invalidunit') {
                 $('#error-info').html('单位错误。');

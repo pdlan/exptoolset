@@ -38,10 +38,16 @@ def analyse_equations_handler():
         return json.dumps(res), 400
     free_vars_name = [s.name for s in free_vars]
     intermediate_vars_name = [s.name for s in intermediate_vars]
+    dimensions, constraints = unit.analyse_dimension(equations, free_vars, intermediate_vars)
+    dimensions_name = {}
+    for k in dimensions:
+        dimensions_name[k.name] = dimensions[k]
     res = {
         'status' : 'ok',
         'free_variables' : free_vars_name,
-        'intermediate_variables' : intermediate_vars_name
+        'intermediate_variables' : intermediate_vars_name,
+        'dimensions' : dimensions_name,
+        'dimension_constraints' : constraints
     }
     return json.dumps(res)
 

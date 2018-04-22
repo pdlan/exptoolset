@@ -4,8 +4,11 @@ var intermediate_vars = [];
 var form_variable_state = {};
 var intermediate_var_units = {};
 var free_var_id;
-var intermediate_var_id; 
-
+var intermediate_var_id;
+var dimensions = {};
+var dimension_constraints = [];
+var free_var_dimensions = [];
+var intermediate_var_edited = false;
 var UnitsForInstrument = {
     'wood_ruler1' : ['cm', 'm', 'mm'],
     'wood_ruler2' : ['cm', 'm', 'mm'],
@@ -25,6 +28,95 @@ var UnitsForInstrument = {
     'analytical_balance2' : ['g', 'mg', 'kg'],
     'analytical_balance3' : ['g', 'mg', 'kg'],
 };
+var UnitsDimension = {
+    'm' : [1, 0, 0, 0, 0, 0],
+    'km' : [1, 0, 0, 0, 0, 0],
+    'dm' : [1, 0, 0, 0, 0, 0],
+    'cm' : [1, 0, 0, 0, 0, 0],
+    'mm' : [1, 0, 0, 0, 0, 0],
+    'um' : [1, 0, 0, 0, 0, 0],
+    'nm' : [1, 0, 0, 0, 0, 0],
+    'kg' : [0, 1, 0, 0, 0, 0],
+    'g' : [0, 1, 0, 0, 0, 0],
+    'mg' : [0, 1, 0, 0, 0, 0],
+    'ug' : [0, 1, 0, 0, 0, 0],
+    'ng' : [0, 1, 0, 0, 0, 0],
+    's' : [0, 0, 1, 0, 0, 0],
+    'min' : [0, 0, 1, 0, 0, 0],
+    'h' : [0, 0, 1, 0, 0, 0],
+    'ms' : [0, 0, 1, 0, 0, 0],
+    'us' : [0, 0, 1, 0, 0, 0],
+    'ns' : [0, 0, 1, 0, 0, 0],
+    'A' : [0, 0, 0, 1, 0, 0],
+    'mA' : [0, 0, 0, 1, 0, 0],
+    'uA' : [0, 0, 0, 1, 0, 0],
+    'K' : [0, 0, 0, 0, 1, 0],
+    'mol' : [0, 0, 0, 0, 0, 1],
+    'mmol' : [0, 0, 0, 0, 0, 1],
+    'umol' : [0, 0, 0, 0, 0, 1],
+    'N' : [1, 1, -2, 0, 0, 0],
+    'J' : [2, 1, -2, 0, 0, 0],
+    'V' : [2, 1, -3, -1, 0, 0]
+};
+var SIUnit = ['m', 'kg', 's', 'A', 'K', 'mol'];
+
+function parse_unit(unit) {
+    var dimension = [0, 0, 0, 0, 0, 0];
+    var factors = unit.split('*');
+    for (var i = 0; i < factors.length; ++i) {
+        var factor = factors[i];
+        if (factor === '') {
+            continue;
+        }
+        var parts = factor.split('^');
+        var d = UnitsDimension[parts[0]];
+        if (d === undefined) {
+            return null;
+        }
+        var exp = 1;
+        if (parts.length > 1) {
+            exp = parseInt(parts[1]);
+        }
+        for (var j = 0; j < 6; ++j) {
+            dimension[j] += d[j] * exp;
+        }
+    }
+    return dimension;
+}
+
+function si_dimension(dimension) {
+    var si_dim = [0, 0, 0, 0, 0, 0];
+    for (var i = 0; i < dimension.length; ++i) {
+        for (var j = 0; j < 6; ++j) {
+            si_dim[j] += free_var_dimensions[i][j] * dimension[i];
+        }
+    }
+    return si_dim;
+}
+
+function si_unit(dimension) {
+    var parts = [[SIUnit[1], dimension[1]], [SIUnit[5], dimension[5]],
+                 [SIUnit[0], dimension[0]], [SIUnit[4], dimension[4]],
+                 [SIUnit[3], dimension[3]], [SIUnit[2], dimension[2]]];
+    var parts_pos = [];
+    var parts_neg = [];
+    for (var i = 0; i < 6; ++i) {
+        if (parts[i][1] > 0) {
+            parts_pos.push(parts[i]);
+        } else if (parts[i][1] < 0) {
+            parts_neg.push(parts[i]);
+        }
+    }
+    parts = parts_pos.concat(parts_neg);
+    var str_parts = [];
+    for (var i = 0; i < parts.length; ++i) {
+        str_parts[i] = parts[i][0];
+        if (parts[i][1] != 1) {
+            str_parts[i] += '^' + parts[i][1];
+        }
+    }
+    return str_parts.join('*');
+}
 
 function on_change_instrument() {
     var instrument = $('#instrument').val();
@@ -43,6 +135,7 @@ function on_change_instrument() {
     }
     form_variable_state[free_var_id]['instrument'] = instrument;
     form_variable_state[free_var_id]['measure_unit'] = $('#measure-unit').val();
+    $('#measure-unit').change();
 }
 
 function on_change_type() {
@@ -76,6 +169,29 @@ function on_change_type() {
     form_variable_state[free_var_id]['variable_type'] = type;
 }
 
+function on_change_freevar_unit(e) {
+    if (intermediate_var_edited) {
+        return;
+    }
+    e.preventDefault();
+    var unit = $(this).val();
+    var dimension = parse_unit(unit);
+    free_var_dimensions[free_var_id] = dimension;
+    for (var i = 0; i < dimension_constraints.length; ++i) {
+        var d1 = si_dimension(dimension_constraints[i][0]);
+        var d2 = si_dimension(dimension_constraints[i][1]);
+        for (var j = 0; j < 6; ++j) {
+            if (d1[j] != d2[j]) {
+                return;
+            }
+        }
+    }
+    for (var i = 0; i < intermediate_vars.length; ++i) {
+        var dim = si_dimension(dimensions[intermediate_vars[i]]);
+        intermediate_var_units[i] = si_unit(dim);
+    }
+}
+
 function on_click_freevar(e) {
     e.preventDefault();
     $('.free-var-item').removeClass('active');
@@ -106,6 +222,11 @@ function on_click_freevar(e) {
     $('#constant-unit').val(state['constant_unit']);
     $('#value').val(state['value']);
     on_change_type();
+    if (state['variable_type'] === 'measure') {
+        $('#measure-unit').change();
+    } else {
+        $('#constant-unit').change();
+    }
 }
 
 function on_click_intermediatevar(e) {
@@ -117,7 +238,10 @@ function on_click_intermediatevar(e) {
     $('#form-intermediate-variable').show();
     $('#form-free-variable').hide();
     $('#intermediate-unit').keyup(function () {intermediate_var_units[intermediate_var_id] = $('#intermediate-unit').val();});
-    $('#intermediate-unit').change(function () {intermediate_var_units[intermediate_var_id] = $('#intermediate-unit').val();});
+    $('#intermediate-unit').change(function () {
+        intermediate_var_units[intermediate_var_id] = $('#intermediate-unit').val();
+        intermediate_var_edited = true;
+    });
     $('#intermediate-unit').val(intermediate_var_units[intermediate_var_id]);
 }
 
@@ -257,6 +381,7 @@ function analyse_equations() {
         data : JSON.stringify(post_data),
         dataType : 'json',
         success: function (data) {
+            intermediate_var_edited = false;
             form_variable_state = {};
             intermediate_var_units = {};
             $('#error-info-equation').hide();
@@ -268,9 +393,13 @@ function analyse_equations() {
             MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'equations-show']);
             free_vars = data['free_variables'];
             intermediate_vars = data['intermediate_variables'];
+            dimensions = data['dimensions'];
+            dimension_constraints = data['dimension_constraints'];
             var free_vars_html = '';
             var intermediate_vars_html = '';
+            free_var_dimensions = [];
             for (var i = 0; i < free_vars.length; ++i) {
+                free_var_dimensions.push([0, 0, 0, 0, 0, 0]);
                 free_vars_html += '<li class="nav-item"><a href="#" class="free-var-item nav-link" data-freevarid="'
                 + i + '">' + convert_varname(free_vars[i]) + '</a></li>';
                 form_variable_state[i] = {
@@ -296,6 +425,8 @@ function analyse_equations() {
             $('#free-variables').html(free_vars_html);
             $('#intermediate-variables').html(intermediate_vars_html);
             $('.free-var-item').click(on_click_freevar);
+            $('#measure-unit').change(on_change_freevar_unit);
+            $('#constant-unit').change(on_change_freevar_unit);
             $('.intermediate-var-item').click(on_click_intermediatevar);
             $('[data-freevarid="0"]').click();
             $('#variables').show();

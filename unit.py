@@ -1,12 +1,12 @@
 import sympy
 import sympy.physics
 
-length = sympy.symbols('length');
-mass = sympy.symbols('mass')
-time = sympy.symbols('time')
-current = sympy.symbols('current')
-temperature = sympy.symbols('temperature')
-amount_of_substance = sympy.symbols('amount_of_substance')
+length = sympy.symbols('length', positive=True);
+mass = sympy.symbols('mass', positive=True)
+time = sympy.symbols('time', positive=True)
+current = sympy.symbols('current', positive=True)
+temperature = sympy.symbols('temperature', positive=True)
+amount_of_substance = sympy.symbols('amount_of_substance', positive=True)
 
 basic_unit = {
     'm' : sympy.Rational(1, 1),
@@ -34,6 +34,14 @@ basic_unit = {
     'mol' : sympy.Rational(1, 1),
     'mmol' : sympy.Rational(1, 1000),
     'umol' : sympy.Rational(1, 1000000)
+}
+
+export_unit = {
+    'N' : 'kg*m*s^-2',
+    'J' : 'kg*m^2*s^-2',
+    'kJ' : 'g*km^2*s^-2',
+    'V' : 'kg*m^2*A^-1*s^-3',
+    'mV' : 'g*m^2*A^-1*s^-3'
 }
 
 class Unit:
@@ -95,9 +103,8 @@ class Unit:
 def parse_unit(unit_str):
     if unit_str == '':
         return Unit(('m', 0), ('kg', 0), ('s', 0), ('A', 0), ('K', 0), ('mol', 0))
-    unit_str = unit_str.replace('N', 'kg*m*s^-2')
-    unit_str = unit_str.replace('J', 'kg*m^2*s^-2')
-    unit_str = unit_str.replace('V', 'kg*m^2*A^-1*s^-3')
+    for k in export_unit:
+        unit_str = unit_str.replace(k, export_unit[k])
     parts = unit_str.split('*')
     L = [None, 0]
     M = [None, 0]
@@ -154,3 +161,59 @@ def parse_unit(unit_str):
     if S[0] == None:
         S[0] = 'K'
     return Unit(L, M, T, I, S, N)
+
+def analyse_dimension(equations, free_vars, intermediate_vars):
+    dimensions = {}
+    constraints = []
+    n = len(free_vars)
+    def is_same_dimension(dim1, dim2):
+        for i in range(n):
+            if dim1[i] != dim2[i]:
+                return False
+        return True
+
+    def get_dimension(expression):
+        if expression.is_constant():
+            return [0 for _ in range(n)]
+        elif isinstance(expression, sympy.Symbol):
+            return dimensions[expression]
+        elif isinstance(expression, sympy.Mul):
+            dimension = [0 for _ in range(n)]
+            for arg in expression.args:
+                arg_dim = get_dimension(arg)
+                for i in range(n):
+                    dimension[i] += arg_dim[i]
+            return dimension
+        elif isinstance(expression, sympy.Add):
+            dimension = get_dimension(expression.args[0])
+            for i in range(1, len(expression.args)):
+                arg_dim = get_dimension(expression.args[i])
+                if not is_same_dimension(dimension, arg_dim):
+                    constraints.append((dimension, arg_dim))
+            return dimension
+        elif isinstance(expression, sympy.Pow):
+            base = expression.args[0]
+            exp = expression.args[1]
+            base_dimension = get_dimension(base)
+            if exp.is_constant():
+                return [float(sympy.N(i * exp)) for i in base_dimension]
+            else:
+                constraints.append((get_dimension(base), [0 for _ in range(n)]))
+                return [0 for _ in range(n)]
+        elif isinstance(expression, sympy.Abs):
+            return get_dimension(expression.args[0])
+        else:
+            dimension = [0 for _ in range(n)]
+            for arg in expression.args:
+                arg_dim = get_dimension(arg)
+                if not is_same_dimension(dimension, arg_dim):
+                    constraints.append((dimension, arg_dim))
+            return dimension
+
+    for i, symbol in enumerate(free_vars):
+        dimensions[symbol] = [1 if i == j else 0 for j in range(n)]
+    for eq in equations:
+        lhs = list(eq.lhs.free_symbols)[0]
+        rhs = eq.rhs
+        dimensions[lhs] = get_dimension(rhs)
+    return dimensions, constraints
