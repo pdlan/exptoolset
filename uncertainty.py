@@ -284,7 +284,7 @@ def full_procedure(equations_, measures, values, uncertainties, units, p):
     for k in uncertainties:
         uncertainties_si[k.name] = units[k].convert_to_si(uncertainties[k])
     for i, eq in enumerate(equations):
-        lhs = list(eq.lhs_free_symbols)[0]
+        lhs = list(eq.lhs.free_symbols)[0]
         for s in eq.rhs.free_symbols:
             if s in full_values:
                 continue
