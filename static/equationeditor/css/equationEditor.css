@@ -1,0 +1,366 @@
+.eqEdEquation {
+    position: relative;
+    line-height: 1;
+    display: inline-block;
+}
+
+.activeContainer .hoverContainer {
+    background: #B5B5B5;
+}
+
+.hoverContainer {
+    background: #E8E8E8;
+}
+
+.eqEdEquation div,
+.eqEdEquation span,
+.eqEdEquation svg,
+.eqEdEquation img {
+    position: absolute;
+    top: 0em;
+    left: 0em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    /* Try to prevent highlighting */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+}
+
+.fontTest {
+    visibility: hidden;
+}
+
+.fontSizeNormal {
+    font-size: 35.5px;/*18.5px;*/
+}
+
+.fontSizeSmaller {
+    font-size: 27.7px;/* fontSizeNormal * 0.7802 */
+}
+
+.fontSizeSmallest {
+    font-size: 23.8px;/* fontSizeNormal * 0.6703 */
+}
+
+.fontSizeMessage {
+    font-size: 20.5px;
+    color: #A9A9B1;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.MathJax_MathItalic {
+    font-family: 'MathJax_Math';
+    font-style: italic;
+}
+
+.MathJax_Main {
+    font-family: 'MathJax_Main';
+}
+
+.MathJax_MainItalic {
+    font-family: 'MathJax_Main';
+    font-style: italic;
+}
+
+.MathJax_Size1 {
+    font-family: 'MathJax_Size1';
+}
+
+.MathJax_Size2 {
+    font-family: 'MathJax_Size2';
+}
+
+.MathJax_Size3 {
+    font-family: 'MathJax_Size3';
+}
+
+.MathJax_Size4 {
+    font-family: 'MathJax_Size4';
+}
+
+.MathJax_AMS {
+    font-family: 'MathJax_AMS';
+}
+
+div.cursor {
+    background-color: #000000;
+    /* The cursor should always be on top */
+    z-index: 50;
+}
+
+div.normalCursor {
+    width: 2px;
+    height: 90%;
+    top: 5%;
+    left: 0px;
+}
+
+div.squareCursor {
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+}
+
+.cursorOff {
+    visibility: hidden;
+}
+
+.highlight {
+    background: #5266FF;
+}
+
+.highlighted div {
+    color: #FFFFFF;
+    border-color: #FFFFFF;
+}
+
+.highlighted .stackedFractionHorizontalBar,
+.highlighted .squareRootOverBar,
+.highlighted .nthRootOverBar {
+    background: #FFFFFF;
+}
+
+.highlighted path {
+    fill: #FFFFFF;
+}
+
+.highlighted rect {
+    stroke: #FFFFFF;
+}
+
+.eqEdContainer {
+    cursor: text;
+    z-index: 3;
+}
+
+div.activeContainer {
+    background: #CFCFCF;
+}
+
+.squareEmptyContainer {
+    cursor: pointer;
+    border: solid #000000;
+}
+
+.eqEdWrapper {
+    z-index: 3;
+}
+
+/* This overflow must be hidden, because brackets extend past
+   equation boundaries, and mess up mouse interactions. */
+.bracketWrapper {
+    overflow: hidden;
+}
+
+.activeContainer .topLevelEmptyContainerWrapper {
+    background: #CFCFCF;
+}
+/*
+.topLevelEmptyContainerWrapper {
+    background: #EDEDED;
+}
+*/
+.stackedFractionHorizontalBar {
+    background: #000000;
+}
+
+.squareRootOverBar {
+    background: #000000;
+}
+
+.nthRootOverBar {
+    background: #000000;
+}
+
+.nthRootRadical {
+    z-index: 7;
+}
+
+.accentSymbol {
+    z-index: 8;
+}
+
+.dotAccent {
+    clip: rect(0.075em, 0.33em, 0.28em, 0.15em);
+}
+
+.dotAccentIE {
+    clip: rect(-0.5em, 0.85em, 0em, 0.1em);
+}
+
+.hatAccent {
+    clip: rect(0.05em, 0.4em, 0.29em, 0.1em);
+}
+
+.hatAccentIE {
+    clip: rect(-0.5em, 0.85em, 0em, 0.1em);
+}
+
+.barAccent {
+    clip: rect(0.21em, 0.45em, 0.28em, 0.05em);
+}
+
+.barAccentIE {
+    clip: rect(-0.1em, 0.45em, 0em, 0.05em);
+}
+
+.nonHighlightVersion {
+    visibility: visible;
+}
+
+.highlightVersion {
+    visibility: hidden;
+}
+
+.eqImg {
+    width: 100%;
+    height: 100%;
+}
+
+.submission-scroll {
+    border: 2px solid #A9A9B1;
+    border-radius: 5px;
+    margin: 30px;
+    padding: 5px;
+    overflow: auto;
+    max-height: 100px;
+    max-width: 350px;
+}
+
+.submission-dynamic {
+    border: 2px solid #A9A9B1;
+    border-radius: 5px;
+    padding: 5px;
+    display: inline-block;
+}
+
+#loadingMessageOuter {
+    width: 100px; 
+    height: 64px;
+}
+
+.eqEdMenuItem {
+    width: 35px;
+    height: 35px;
+    background-color: #E8E8E8;
+    display: inline-block;
+    margin-right: 2.5px;
+    margin-bottom: 2.5px;
+}
+
+.eqEdMenuItem:hover {
+    background-color: #B5B5B5;
+    cursor: pointer;
+}
+
+/* Menu CSS */
+/*----- Tabs -----*/
+.tabs {
+    width:100%;
+    display:inline-block;
+}
+ 
+/*----- Tab Links -----*/
+/* Clearfix */
+.tab-links:after {
+    display:block;
+    clear:both;
+    content:'';
+}
+
+.tab-links {
+    margin-bottom: 0px;
+    padding-left: 7px;
+    white-space: nowrap;
+}
+
+.tab-links li {
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 6px;
+    margin-bottom: 0px;
+    /*float:left;*/
+    display:inline-block;
+    list-style:none;
+}
+ 
+.tab-links a {
+    padding:9px 15px;
+    display:inline-block;
+    background:#E0E0E0;
+    font-size:16px;
+    color:#000;
+    text-decoration:none;
+}
+
+.outer-tab-links a:hover {
+    background:#BABABA;
+}
+
+.inner-tab-links a:hover {
+    background:#8A8A8A;
+}
+
+.outerTab.active a, .outerTab.active a:hover {
+    background: #9C9C9C;
+}
+
+.innerTab.active a, .innerTab.active a:hover {
+    background: #707070;
+}
+
+.top-level-tab {
+    background:#9C9C9C;
+}
+/*----- Content of Tabs -----*/
+.tab-content {
+    padding: 15px 2.5%;
+}
+
+.tab-content-nested {
+    background: #707070;
+}
+
+#tab-content-top {
+    width: 700px;
+    background: #9C9C9C;
+}
+ 
+.tab {
+    display:none;
+}
+
+.tab.active {
+    display:block;
+}
+
+.innerTabImg {
+    height: 34px;
+}
+
+.menuItem {
+    background: transparent;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+    vertical-align: top;
+}
+
+.menuItem:hover {
+    cursor: pointer;
+}
+
+.tab.outer > .menuItem:hover {
+    background-color: #707070;
+}
+
+.tab.inner > .menuItem:hover {
+    background-color: #545454;
+}

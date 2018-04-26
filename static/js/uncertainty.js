@@ -16,6 +16,7 @@ var UnitsForInstrument = {
     'analytical_balance1' : ['g', 'mg', 'kg'],
     'analytical_balance2' : ['g', 'mg', 'kg'],
     'analytical_balance3' : ['g', 'mg', 'kg'],
+    'stopwatch' : ['s', 'ms', 'min']
 };
 
 function on_change_instrument() {

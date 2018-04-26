@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="exptoolset">
+<html>
     <head>
         <meta charset="utf-8">
         <title>大物实验数据处理</title>
@@ -12,10 +12,19 @@
         <main role="main" class="container">
             <div class="row">
                 <div class="offset-md-2 col-md-8">
+                    <label for="equations-input" class="alert alert-info col-md-12">请用Latex表示运算过程的公式，一行一个，按照依赖顺序写出，方程左边只能有一个变量。如果不会Latex也可以使用公式编辑器。</label>
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" id="latex">Latex代码</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="editor">公式编辑器</a>
+                        </li>
+                    </ul>
                     <form id="form-equations">
                         <div class="form-group">
-                            <label for="equations-input" class="alert alert-info col-md-12">请用Latex表示运算过程的公式，一行一个，按照依赖顺序写出，方程左边只能有一个变量。</label>
                             <textarea id="equations-input" name="equations-input" class="form-control" rows="5" required></textarea>
+                            <div id="equations-input-editor"></div>
                         </div>
                         <div class="form-group row">
                             <div class="col-md-10">
@@ -71,6 +80,7 @@
                                         <option value="analytical_balance1">分析天平（量程200g，接近满量程</option>
                                         <option value="analytical_balance2">分析天平（量程200g，1/2量程附近</option>
                                         <option value="analytical_balance3">分析天平（量程200g，1/3量程和以下</option>
+                                        <option value="stopwatch">电子秒表（人反应时间0.2s）</option>
                                         <option value="custom">自定义测量仪器</option>>
                                     </select>
                                 </div>

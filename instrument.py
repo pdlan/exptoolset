@@ -18,6 +18,7 @@ analytical_balance2 = (sympy.S('0.0000010'), 3, '分析天平', 7)
 analytical_balance3 = (sympy.S('0.0000007'), 3, '分析天平', 7)
 thermometer1 = (sympy.S('1'), 3, '普通温度计', 0)
 thermometer2 = (sympy.S('0.2'), 3, '精密温度计', 1)
+stopwatch = (sympy.S('0.2'), 3, '电子秒表', 1)
 
 instruments = {
     'wood_ruler1' : wood_ruler1,
@@ -37,5 +38,6 @@ instruments = {
     'analytical_balance2' : analytical_balance2,
     'analytical_balance3' : analytical_balance3,
     'thermometer1' : thermometer1,
-    'thermometer2' : thermometer2
+    'thermometer2' : thermometer2,
+    'stopwatch' : stopwatch
 }

@@ -9,6 +9,8 @@ var dimensions = {};
 var dimension_constraints = [];
 var free_var_dimensions = [];
 var intermediate_var_edited = false;
+var input_mode = 'latex';
+var editor_loaded = false;
 var UnitsForInstrument = {
     'wood_ruler1' : ['cm', 'm', 'mm'],
     'wood_ruler2' : ['cm', 'm', 'mm'],
@@ -27,6 +29,7 @@ var UnitsForInstrument = {
     'analytical_balance1' : ['g', 'mg', 'kg'],
     'analytical_balance2' : ['g', 'mg', 'kg'],
     'analytical_balance3' : ['g', 'mg', 'kg'],
+    'stopwatch' : ['s', 'ms', 'min']
 };
 var UnitsDimension = {
     'm' : [1, 0, 0, 0, 0, 0],
@@ -450,6 +453,45 @@ function analyse_equations() {
     return false;
 }
 
+function on_click_add_equation(e) {
+    e.preventDefault();
+    var eq_jsonobj = $('.eqEdEquation').data('eqObject').buildJsonObj();
+    var eq_latex = generateLatex(eq_jsonobj['operands']['topLevelContainer']);
+    console.log(eq_latex);
+    var latex = $('#equations-input').val();
+    console.log(latex);
+    if (latex != '') {
+        latex += '\n';
+    }
+    latex += eq_latex;
+    $('#equations-input').val(latex);
+}
+
+function on_editor_loaded() {
+    $('#add-equation').show();
+    $('#add-equation').click(on_click_add_equation);
+}
+
 $(document).ready(function () {
+    $('#latex').click(function () {
+        input_mode = 'latex';
+        $('#equations-input').prop('readonly', false);
+        $('#latex').addClass('active');
+        $('#equations-input-editor').hide();
+        $('#editor').removeClass('active');
+    });
+    $('#editor').click(function () {
+        input_mode = 'editor';
+        $('#equations-input').prop('readonly', true);
+        $('#latex').removeClass('active');
+        $('#equations-input-editor').show();
+        $('#editor').addClass('active');
+        if (!editor_loaded) {
+            $('#equations-input-editor').load('/static/equationeditor/equationeditor.html', function() {
+                onload_editor();
+                editor_loaded = true;
+            });
+        }
+    });
     $('#form-equations').submit(analyse_equations);
 });

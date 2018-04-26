@@ -1,0 +1,127 @@
+<script src="/static/equationeditor/js/underscore-min.js"></script>
+<script src="/static/equationeditor/js/mousetrap.min.js"></script>
+<script src="/static/equationeditor/js/spin.min.js"></script>
+<script src="/static/equationeditor/js/webfont.js"></script>
+<script src="/static/equationeditor/js/equationeditor.js"></script>
+<link href="/static/equationeditor/css/equationEditor.css" rel="stylesheet" type="text/css" charset="utf-8" />
+<input id="hiddenFocusInput" style="width: 0; height: 0; opacity: 0; position: absolute; top: 0; left: 0;" type="text" autocapitalize="off" />
+<div id="loadingMessageOuter" style="width: 234px; height: 64px;">
+    <div id="loadingMessage" class="fontSizeSmaller" style="width: 234px; height: 64px; position: fixed;"></div>
+</div>
+<div class="equation-editor"></div>
+<div><button style="display: none" type="button" class="btn btn-info" id="add-equation">添加方程</button></div>
+<div class="tabs">
+        <ul class="outer-tab-links tab-links">
+            <li class="outerTab active"><a href="#common">常用符号</a></li>
+            <li class="outerTab"><a href="#brackets">括号</a></li>
+            <li class="outerTab"><a href="#symbols">希腊字母</a></li>
+            <li class="outerTab"><a href="#functions">函数</a></li>
+        </ul>
+     
+        <div class="tab-content" id="tab-content-top">
+            <div id="common" class="tab outer active">
+                <img class="menuItem" id="stackedFractionButton" src="/static/equationeditor/MenuImages/png/stackedFraction.png">
+                <img class="menuItem" id="superscriptButton" src="/static/equationeditor/MenuImages/png/superscript.png">
+                <img class="menuItem" id="subscriptButton" src="/static/equationeditor/MenuImages/png/subscript.png">
+                <img class="menuItem" id="superscriptAndSubscriptButton" src="/static/equationeditor/MenuImages/png/superscriptAndSubscript.png">
+                <img class="menuItem" id="squareRootButton" src="/static/equationeditor/MenuImages/png/squareRoot.png">
+                <img class="menuItem" id="nthRootButton" height="60" src="/static/equationeditor/MenuImages/png/nthRoot.png">
+                <img class="menuItem" id="logLowerButton" height="55" src="/static/equationeditor/MenuImages/png/log_n.png">
+                <span class="menuItem MathJax_Main" id="logButton" style="font-size: 45px;">log</span>
+                <span class="menuItem MathJax_Main" id="lnButton" style="font-size: 45px;">ln</span>
+                <span class="menuItem MathJax_Main" id="timesButton" style="font-size: 45px;">&#215;</span>
+            </div>
+     
+            <div id="brackets" class="tab outer">
+                <ul class="inner-tab-links tab-links">
+                    <li class="innerTab active"><a href="#bracketsSingle">单个括号</a></li>
+                    <li class="innerTab"><a href="#bracketsPair">成对括号</a></li>
+                </ul>
+                <div class="tab-content tab-content-nested">
+                  <div id="bracketsSingle" class="tab inner active">
+                    <span class="menuItem MathJax_Main" id="leftAngleBracketButton" style="font-size: 65px;">&#10216;</span>
+                    <span class="menuItem MathJax_Main" id="rightAngleBracketButton" style="font-size: 65px;">&#10217;</span>
+                    <span class="menuItem MathJax_Main" id="leftFloorBracketButton" style="font-size: 65px;">&#8970;</span>
+                    <span class="menuItem MathJax_Main" id="rightFloorBracketButton" style="font-size: 65px;">&#8971;</span>
+                    <span class="menuItem MathJax_Main" id="leftCeilBracketButton" style="font-size: 65px;">&#8968;</span>
+                    <span class="menuItem MathJax_Main" id="rightCeilBracketButton" style="font-size: 65px;">&#8969;</span>
+                  </div>
+                  <div id="bracketsPair" class="tab inner">
+                    <img class="menuItem" id="parenthesesBracketPairButton" src="/static/equationeditor/MenuImages/png/parenthesesBracketPair.png">
+                    <img class="menuItem" id="squareBracketPairButton" src="/static/equationeditor/MenuImages/png/squareBracketPair.png">
+                    <img class="menuItem" id="curlyBracketPairButton" src="/static/equationeditor/MenuImages/png/curlyBracketPair.png">
+                    <img class="menuItem" id="angleBracketPairButton" src="/static/equationeditor/MenuImages/png/angleBracketPair.png">
+                    <img class="menuItem" id="floorBracketPairButton" src="/static/equationeditor/MenuImages/png/floorBracketPair.png">
+                    <img class="menuItem" id="ceilBracketPairButton" src="/static/equationeditor/MenuImages/png/ceilBracketPair.png">
+                    <img class="menuItem" id="absValBracketPairButton" src="/static/equationeditor/MenuImages/png/absBracketPair.png">
+                    <img class="menuItem" id="normBracketPairButton" src="/static/equationeditor/MenuImages/png/normBracketPair.png">
+                  </div>
+                </div>
+            </div>
+            
+            <div id="symbols" class="tab outer">
+              <span class="menuItem MathJax_Main" id="gammaUpperButton" style="font-size: 45px;">&#915;</span>
+              <span class="menuItem MathJax_Main" id="deltaUpperButton" style="font-size: 45px;">&#916;</span>
+              <span class="menuItem MathJax_Main" id="thetaUpperButton" style="font-size: 45px;">&#920;</span>
+              <span class="menuItem MathJax_Main" id="lambdaUpperButton" style="font-size: 45px;">&#923;</span>
+              <span class="menuItem MathJax_Main" id="xiUpperButton" style="font-size: 45px;">&#926;</span>
+              <span class="menuItem MathJax_Main" id="piUpperButton" style="font-size: 45px;">&#928;</span>
+              <span class="menuItem MathJax_Main" id="sigmaUpperButton" style="font-size: 45px;">&#931;</span>
+              <span class="menuItem MathJax_Main" id="upsilonUpperButton" style="font-size: 45px;">&#933;</span>
+              <span class="menuItem MathJax_Main" id="phiUpperButton" style="font-size: 45px;">&#934;</span>
+              <span class="menuItem MathJax_Main" id="psiUpperButton" style="font-size: 45px;">&#936;</span>
+              <span class="menuItem MathJax_Main" id="omegaUpperButton" style="font-size: 45px;">&#937;<  
+              <span class="menuItem MathJax_MathItalic" id="alphaButton" style="font-size: 45px;">&#945;</span>
+              <span class="menuItem MathJax_MathItalic" id="betaButton" style="font-size: 45px;">&#946;</span>
+              <span class="menuItem MathJax_MathItalic" id="gammaButton" style="font-size: 45px;">&#947;</span>
+              <span class="menuItem MathJax_MathItalic" id="deltaButton" style="font-size: 45px;">&#948;</span>
+              <span class="menuItem MathJax_MathItalic" id="varEpsilonButton" style="font-size: 45px;">&#949;</span>
+              <span class="menuItem MathJax_MathItalic" id="epsilonButton" style="font-size: 45px;">&#1013;</span>
+              <span class="menuItem MathJax_MathItalic" id="zetaButton" style="font-size: 45px;">&#950;</span>
+              <span class="menuItem MathJax_MathItalic" id="etaButton" style="font-size: 45px;">&#951;</span>
+              <span class="menuItem MathJax_MathItalic" id="thetaButton" style="font-size: 45px;">&#952;</span>
+              <span class="menuItem MathJax_MathItalic" id="varThetaButton" style="font-size: 45px;">&#977;</span>
+              <span class="menuItem MathJax_MathItalic" id="iotaButton" style="font-size: 45px;">&#953;</span>
+              <span class="menuItem MathJax_MathItalic" id="kappaButton" style="font-size: 45px;">&#954;</span>
+              <span class="menuItem MathJax_MathItalic" id="lambdaButton" style="font-size: 45px;">&#955;</span>
+              <span class="menuItem MathJax_MathItalic" id="muButton" style="font-size: 45px;">&#956;</span>
+              <span class="menuItem MathJax_MathItalic" id="nuButton" style="font-size: 45px;">&#957;</span>
+              <span class="menuItem MathJax_MathItalic" id="xiButton" style="font-size: 45px;">&#958;</span>
+              <span class="menuItem MathJax_MathItalic" id="piButton" style="font-size: 45px;">&#960;</span>
+              <span class="menuItem MathJax_MathItalic" id="varPiButton" style="font-size: 45px;">&#982;</span>
+              <span class="menuItem MathJax_MathItalic" id="rhoButton" style="font-size: 45px;">&#961;</span>
+              <span class="menuItem MathJax_MathItalic" id="varRhoButton" style="font-size: 45px;">&#1009;</span>
+              <span class="menuItem MathJax_MathItalic" id="sigmaButton" style="font-size: 45px;">&#963;</span>
+              <span class="menuItem MathJax_MathItalic" id="varSigmaButton" style="font-size: 45px;">&#962;</span>
+              <span class="menuItem MathJax_MathItalic" id="tauButton" style="font-size: 45px;">&#964;</span>
+              <span class="menuItem MathJax_MathItalic" id="upsilonButton" style="font-size: 45px;">&#965;</span>
+              <span class="menuItem MathJax_MathItalic" id="varPhiButton" style="font-size: 45px;">&#966;</span>
+              <span class="menuItem MathJax_MathItalic" id="phiButton" style="font-size: 45px;">&#981;</span>
+              <span class="menuItem MathJax_MathItalic" id="chiButton" style="font-size: 45px;">&#967;</span>
+              <span class="menuItem MathJax_MathItalic" id="psiButton" style="font-size: 45px;">&#968;</span>
+              <span class="menuItem MathJax_MathItalic" id="omegaButton" style="font-size: 45px;">&#969;</span>
+            </div>
+
+            <div id="functions" class="tab outer">
+                <ul class="inner-tab-links tab-links">
+                    <li class="innerTab active"><a href="#functionsTrig">三角及双曲函数</a></li>
+                </ul>
+                <div class="tab-content tab-content-nested">
+                  <div id="functionsTrig" class="tab inner active">
+                    <span class="menuItem MathJax_Main" id="sinButton" style="font-size: 45px;">sin</span>
+                    <span class="menuItem MathJax_Main" id="cosButton" style="font-size: 45px;">cos</span>
+                    <span class="menuItem MathJax_Main" id="tanButton" style="font-size: 45px;">tan</span>
+                    <span class="menuItem MathJax_Main" id="cotButton" style="font-size: 45px;">cot</span>
+                    <span class="menuItem MathJax_Main" id="secButton" style="font-size: 45px;">sec</span>
+                    <span class="menuItem MathJax_Main" id="cscButton" style="font-size: 45px;">csc</span>
+                    <span class="menuItem MathJax_Main" id="sinhButton" style="font-size: 45px;">sinh</span>
+                    <span class="menuItem MathJax_Main" id="coshButton" style="font-size: 45px;">cosh</span>
+                    <span class="menuItem MathJax_Main" id="tanhButton" style="font-size: 45px;">tanh</span>
+                    <span class="menuItem MathJax_Main" id="cothButton" style="font-size: 45px;">coth</span>
+                    <span class="menuItem MathJax_Main" id="sechButton" style="font-size: 45px;">sech</span>
+                    <span class="menuItem MathJax_Main" id="cschButton" style="font-size: 45px;">csch</span>
+                  </div>
+                </div>
+            </div>
+        </div>
+</div>

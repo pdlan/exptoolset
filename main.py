@@ -142,7 +142,8 @@ def full_procedure_handler():
                 return json.dumps({'status':'inconsistentunit', 'lhs':symbol}), 400
         latex = uncertainty.full_procedure(equations, measures, values, uncertainties, units, p)
         return json.dumps({'status':'ok', 'latex':latex})
-    except:
+    except Exception as e:
+        print(e)
         return json.dumps({'status':'badrequest'}), 400
 
 @app.route('/')
