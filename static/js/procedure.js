@@ -97,6 +97,9 @@ function parse_unit(unit) {
         } else {
             return null;
         }
+        if (!d) {
+            return null;
+        }
         var exp = 1;
         if (parts.length > 1) {
             exp = parseInt(parts[1]);

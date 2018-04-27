@@ -128,8 +128,9 @@ def parse_unit(unit_str, reserve_name=False):
             else:
                 base_exp[1] = base_exp[1].strip()
             if base_exp[0] in export_unit:
-                return parse_parts(export_unit[base_exp[0]].split('*'), exp=int(base_exp[1]))
-            if base_exp[0] in ['m', 'km', 'cm', 'mm', 'um', 'nm']:
+                if not parse_parts(export_unit[base_exp[0]].split('*'), exp=int(base_exp[1])):
+                    return False
+            elif base_exp[0] in ['m', 'km', 'cm', 'mm', 'um', 'nm']:
                 if L[0] != None and base_exp[0] != L[0]:
                     return False
                 L[0] = base_exp[0]
