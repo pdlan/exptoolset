@@ -61,10 +61,30 @@ var UnitsDimension = {
     'J' : [2, 1, -2, 0, 0, 0],
     'V' : [2, 1, -3, -1, 0, 0]
 };
+var ExportUnit = {
+    'N' : 'kg*m*s^-2',
+    'J' : 'kg*m^2*s^-2',
+    'kJ' : 'g*km^2*s^-2',
+    'V' : 'kg*m^2*A^-1*s^-3',
+    'mV' : 'g*m^2*A^-1*s^-3',
+    'C' : 'A*s',
+    'F' : 'kg^-1*m^-2*A^2*s^4',
+    'mF' : 'g^-1*m^-2*mA^2*s^4',
+    'uF' : 'kg^-1*m^-2*mA^2*s^4',
+    'nF' : 'g^-1*m^-2*uA^2*s^4',
+    'pF' : 'kg^-1*m^-2*uA^2*s^4',
+    'Hz' : 's^-1',
+    'W' : 'kg*m^2*s^-3',
+    'kW' : 'g*km^2*s^-3'
+};
+
 var SIUnit = ['m', 'kg', 's', 'A', 'K', 'mol'];
 
 function parse_unit(unit) {
     var dimension = [0, 0, 0, 0, 0, 0];
+    for (var i in ExportUnit) {
+        unit = unit.replace(i, ExportUnit[i]);
+    }
     var factors = unit.split('*');
     for (var i = 0; i < factors.length; ++i) {
         var factor = factors[i];
@@ -126,6 +146,7 @@ function on_change_instrument() {
     if (instrument === 'custom') {
         $('#measure-custom').show();
         $('#measure-unit-group').hide();
+        $('#measure-custom-unit').change();
     } else {
         $('#measure-custom').hide();
         units = UnitsForInstrument[instrument];
@@ -135,10 +156,11 @@ function on_change_instrument() {
         }
         $('#measure-unit').html(html);
         $('#measure-unit-group').show();
+        $('#measure-unit').change();
     }
     form_variable_state[free_var_id]['instrument'] = instrument;
-    form_variable_state[free_var_id]['measure_unit'] = $('#measure-unit').val();
-    $('#measure-unit').change();
+    //form_variable_state[free_var_id]['measure_unit'] = $('#measure-unit').val();
+    //form_variable_state[free_var_id]['measure_custom_unit'] = $('#measure-custom-unit').val();
 }
 
 function on_change_type() {
@@ -206,7 +228,8 @@ function on_click_freevar(e) {
     $('#variable-type').change(on_change_type);
     $('#deltab').change(function () {form_variable_state[free_var_id]['deltab'] = $('#deltab').val();});
     $('#C').change(function () {form_variable_state[free_var_id]['C'] = $('#C').val();});
-    $('#measure-unit').change(function () {form_variable_state[free_var_id]['measure-unit'] = $('#measure-unit').val();});
+    $('#measure-unit').change(function () {form_variable_state[free_var_id]['measure_unit'] = $('#measure-unit').val();});
+    $('#measure-custom-unit').change(function () {form_variable_state[free_var_id]['measure_custom_unit'] = $('#measure-custom-unit').val();});
     $('#data').keyup(function () {form_variable_state[free_var_id]['data'] = $('#data').val();});
     $('#data').change(function () {form_variable_state[free_var_id]['data'] = $('#data').val();});
     $('#constant-unit').keyup(function () {form_variable_state[free_var_id]['constant_unit'] = $('#constant-unit').val();});
@@ -221,15 +244,19 @@ function on_click_freevar(e) {
     $('#deltab').val(state['deltab']);
     $('#C').val(state['C']);
     $('#measure-unit').val(state['measure_unit']);
+    $('#measure-custom-unit').val(state['measure_custom_unit']);
     $('#data').val(state['data']);
     $('#constant-unit').val(state['constant_unit']);
     $('#value').val(state['value']);
     on_change_type();
+    /*
     if (state['variable_type'] === 'measure') {
         $('#measure-unit').change();
+        $('#measure-custom-unit').change();
     } else {
         $('#constant-unit').change();
     }
+    */
 }
 
 function on_click_intermediatevar(e) {
@@ -253,22 +280,22 @@ function convert_varname(varname) {
     .replace('\\beta', 'β')
     .replace('\\gamma', 'γ').replace('\\Gamma', 'Γ')
     .replace('\\delta', 'δ').replace('\\Delta', 'Δ')
-    .replace('\\epsilon', 'ε').replace('\\varepsilon', 'ε')
+    .replace('\\epsilon', 'ϵ').replace('\\varepsilon', 'ε')
     .replace('\\zeta', 'ζ')
     .replace('\\eta', 'η')
-    .replace('\\theta', 'θ').replace('\\Theta', 'Θ').replace('\\vartheta', 'θ')
+    .replace('\\theta', 'θ').replace('\\Theta', 'Θ').replace('\\vartheta', 'ϑ')
     .replace('\\iota', 'ι')
-    .replace('\\kappa', 'κ').replace('\\varkappa', 'κ')
+    .replace('\\kappa', 'κ').replace('\\varkappa', 'ϰ')
     .replace('\\lambda', 'λ').replace('\\Lambda', 'Λ')
     .replace('\\mu', 'μ')
     .replace('\\nu', 'ν')
     .replace('\\xi', 'ξ').replace('\\Xi', 'Ξ')
-    .replace('\\pi', 'π').replace('\\Pi', 'Π')
-    .replace('\\rho', 'ρ').replace('\\varrho', 'ρ')
-    .replace('\\sigma', 'σ').replace('\\Sigma', 'Σ').replace('\\varsigma', 'σ')
+    .replace('\\pi', 'π').replace('\\Pi', 'Π').replace('\\varpi', 'ϖ')
+    .replace('\\rho', 'ρ').replace('\\varrho', 'ϱ')
+    .replace('\\sigma', 'σ').replace('\\Sigma', 'Σ').replace('\\varsigma', 'ς')
     .replace('\\tau', 'τ')
-    .replace('\\upsilon', 'υ')
-    .replace('\\phi', 'φ').replace('\\Phi', 'Φ').replace('\\varphi', 'φ')
+    .replace('\\upsilon', 'υ').replace('\\Upsilon', 'Υ')
+    .replace('\\phi', 'ϕ').replace('\\Phi', 'Φ').replace('\\varphi', 'φ')
     .replace('\\chi', 'χ')
     .replace('\\psi', 'ψ').replace('\\Psi', 'Ψ')
     .replace('\\omega', 'ω').replace('\\Omega', 'Ω');
@@ -289,7 +316,7 @@ function generate() {
             }
             var instrument;
             if (state['instrument'] === 'custom') {
-                units[name] = '';
+                units[name] = state['measure_custom_unit'];
                 instrument = [state['deltab'], state['C']];
             } else {
                 instrument = state['instrument'];
@@ -411,6 +438,7 @@ function analyse_equations() {
                     'deltab' : '',
                     'C' : '3',
                     'measure_unit': '',
+                    'measure_custom_unit': '',
                     'data' : '',
                     'constant_unit' : '',
                     'value' : '',
@@ -429,6 +457,7 @@ function analyse_equations() {
             $('#intermediate-variables').html(intermediate_vars_html);
             $('.free-var-item').click(on_click_freevar);
             $('#measure-unit').change(on_change_freevar_unit);
+            $('#measure-custom-unit').change(on_change_freevar_unit);
             $('#constant-unit').change(on_change_freevar_unit);
             $('.intermediate-var-item').click(on_click_intermediatevar);
             $('[data-freevarid="0"]').click();
@@ -457,9 +486,7 @@ function on_click_add_equation(e) {
     e.preventDefault();
     var eq_jsonobj = $('.eqEdEquation').data('eqObject').buildJsonObj();
     var eq_latex = generateLatex(eq_jsonobj['operands']['topLevelContainer']);
-    console.log(eq_latex);
     var latex = $('#equations-input').val();
-    console.log(latex);
     if (latex != '') {
         latex += '\n';
     }

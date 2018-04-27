@@ -32,6 +32,12 @@ def measure_uncertainty(data, measure_instrument, p, unit):
     return uncertainty, mean, stdev, t, db, kp, C
 
 def round_after_point(number, digits):
+    if digits < 0:
+        s = '%d' % decimal.Decimal(str(sympy.N(number)))
+        if len(s) > -digits:
+            return s[:digits] + '0' * (-digits)
+        else:
+            return '0'
     fmt = '%%.%df' % digits
     return fmt % decimal.Decimal(str(sympy.N(number)))
 

@@ -109,9 +109,10 @@ class Unit:
     def standard_unit(self):
         return Unit(('m', self.L[1]), ('kg', self.M[1]), ('s', self.T[1]), ('K', self.S[1]), ('A', self.I[1]), ('mol', self.N[1]))
 
-def parse_unit(unit_str):
+def parse_unit(unit_str, reserve_name=False):
     if unit_str == '':
         return Unit(('m', 0), ('kg', 0), ('s', 0), ('A', 0), ('K', 0), ('mol', 0))
+    unit_str_orig = unit_str
     for k in export_unit:
         unit_str = unit_str.replace(k, export_unit[k])
     parts = unit_str.split('*')
@@ -123,8 +124,11 @@ def parse_unit(unit_str):
     S = [None, 0]
     for p in parts:
         base_exp = p.split('^')
+        base_exp[0] = base_exp[0].strip()
         if len(base_exp) == 1:
             base_exp.append(1)
+        else:
+            base_exp[1] = base_exp[1].strip()
         if base_exp[0] in ['m', 'km', 'cm', 'mm', 'um', 'nm']:
             if L[0] != None and base_exp[0] != L[0]:
                 return None
@@ -169,7 +173,21 @@ def parse_unit(unit_str):
         N[0] = 'mol'
     if S[0] == None:
         S[0] = 'K'
-    return Unit(L, M, T, I, S, N)
+    unit = Unit(L, M, T, I, S, N)
+    if reserve_name:
+        unit.name = unit_str_orig
+        parts = unit_str_orig.split('*')
+        strs_latex = []
+        for p in parts:
+            base_exp = p.split('^')
+            base_exp[0] = base_exp[0].strip()
+            str_latex = '\\mathrm{%s}' % base_exp[0]
+            if len(base_exp) > 1:
+                base_exp[1] = base_exp[1].strip()
+                str_latex += '^{%d}' % int(base_exp[1])
+            strs_latex.append(str_latex)
+        unit.latex = '\\cdot '.join(strs_latex)
+    return unit
 
 def analyse_dimension(equations, free_vars, intermediate_vars):
     dimensions = {}

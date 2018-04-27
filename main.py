@@ -1,4 +1,5 @@
 import json
+import traceback
 import sympy
 from flask import Flask, request
 import uncertainty
@@ -51,15 +52,18 @@ def analyse_equations_handler():
     }
     return json.dumps(res)
 
-def get_instrument(instrument_str):
+def get_instrument(instrument_str, unit=None):
     if isinstance(instrument_str, str) and instrument_str in instrument.instruments:
         return instrument.instruments[instrument_str]
+    deltab = instrument_str[0]
+    if unit:
+        deltab = uncertainty.remove_end_zero(unit.convert_to_si(sympy.S(deltab)), noexp=True)
     try:
-        parts = instrument_str[0].split('.')
+        parts = deltab.split('.')
         digits = 0
         if len(parts) > 1:
             digits = len(parts[1])
-        return (sympy.S(instrument_str[0]), sympy.S(instrument_str[1]), 'CustomInstrument', digits)
+        return (sympy.S(deltab), sympy.S(instrument_str[1]), 'CustomInstrument', digits)
     except:
         return None
 
@@ -101,7 +105,7 @@ def full_procedure_handler():
     except:
         return json.dumps({'status':'badrequest'}), 400
     for k in units_str:
-        units_str[k] = unit.parse_unit(units_str[k])
+        units_str[k] = unit.parse_unit(units_str[k], reserve_name=True)
         if units_str[k] == None:
             return json.dumps({'status':'invalidunit', 'unit':k}), 400
     equations = []
@@ -128,7 +132,7 @@ def full_procedure_handler():
             units[symbols[k]] = units_str[k]
         for k in measures_str:
             data = [sympy.S(i) for i in measures_str[k][0]]
-            measure_instrument = get_instrument(measures_str[k][1])
+            measure_instrument = get_instrument(measures_str[k][1], unit=units_str[k])
             if measure_instrument == None:
                 return json.dumps({'status':'invalidinstrument', 'var':k}), 400
             measures[symbols[k]] = (data, measure_instrument)
@@ -142,8 +146,8 @@ def full_procedure_handler():
                 return json.dumps({'status':'inconsistentunit', 'lhs':symbol}), 400
         latex = uncertainty.full_procedure(equations, measures, values, uncertainties, units, p)
         return json.dumps({'status':'ok', 'latex':latex})
-    except Exception as e:
-        print(e)
+    except Exception:
+        #traceback.print_exc()
         return json.dumps({'status':'badrequest'}), 400
 
 @app.route('/')
