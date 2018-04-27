@@ -112,9 +112,6 @@ class Unit:
 def parse_unit(unit_str, reserve_name=False):
     if unit_str == '':
         return Unit(('m', 0), ('kg', 0), ('s', 0), ('A', 0), ('K', 0), ('mol', 0))
-    unit_str_orig = unit_str
-    for k in export_unit:
-        unit_str = unit_str.replace(k, export_unit[k])
     parts = unit_str.split('*')
     L = [None, 0]
     M = [None, 0]
@@ -122,45 +119,51 @@ def parse_unit(unit_str, reserve_name=False):
     I = [None, 0]
     N = [None, 0]
     S = [None, 0]
-    for p in parts:
-        base_exp = p.split('^')
-        base_exp[0] = base_exp[0].strip()
-        if len(base_exp) == 1:
-            base_exp.append(1)
-        else:
-            base_exp[1] = base_exp[1].strip()
-        if base_exp[0] in ['m', 'km', 'cm', 'mm', 'um', 'nm']:
-            if L[0] != None and base_exp[0] != L[0]:
-                return None
-            L[0] = base_exp[0]
-            L[1] += int(base_exp[1])
-        elif base_exp[0] in ['kg', 'g', 'mg', 'ug', 'ng']:
-            if M[0] != None and base_exp[0] != M[0]:
-                return None
-            M[0] = base_exp[0]
-            M[1] += int(base_exp[1])
-        elif base_exp[0] in ['s', 'ms', 'us', 'ns', 'min', 'h']:
-            if T[0] != None and base_exp[0] != T[0]:
-                return None
-            T[0] = base_exp[0]
-            T[1] += int(base_exp[1])
-        elif base_exp[0] in ['A', 'mA', 'uA']:
-            if I[0] != None and base_exp[0] != I[0]:
-                return None
-            I[0] = base_exp[0]
-            I[1] += int(base_exp[1])
-        elif base_exp[0] in ['mol', 'mmol', 'umol']:
-            if N[0] != None and base_exp[0] != N[0]:
-                return None
-            N[0] = base_exp[0]
-            N[1] += int(base_exp[1])
-        elif base_exp[0] in ['K']:
-            if S[0] != None and base_exp[0] != S[0]:
-                return None
-            S[0] = base_exp[0]
-            S[1] += int(base_exp[1])
-        else:
-            return None
+    def parse_parts(parts, exp=1):
+        for p in parts:
+            base_exp = p.split('^')
+            base_exp[0] = base_exp[0].strip()
+            if len(base_exp) == 1:
+                base_exp.append(1)
+            else:
+                base_exp[1] = base_exp[1].strip()
+            if base_exp[0] in export_unit:
+                return parse_parts(export_unit[base_exp[0]].split('*'), exp=int(base_exp[1]))
+            if base_exp[0] in ['m', 'km', 'cm', 'mm', 'um', 'nm']:
+                if L[0] != None and base_exp[0] != L[0]:
+                    return False
+                L[0] = base_exp[0]
+                L[1] += int(base_exp[1]) * exp
+            elif base_exp[0] in ['kg', 'g', 'mg', 'ug', 'ng']:
+                if M[0] != None and base_exp[0] != M[0]:
+                    return False
+                M[0] = base_exp[0]
+                M[1] += int(base_exp[1]) * exp
+            elif base_exp[0] in ['s', 'ms', 'us', 'ns', 'min', 'h']:
+                if T[0] != None and base_exp[0] != T[0]:
+                    return False
+                T[0] = base_exp[0]
+                T[1] += int(base_exp[1]) * exp
+            elif base_exp[0] in ['A', 'mA', 'uA']:
+                if I[0] != None and base_exp[0] != I[0]:
+                    return False
+                I[0] = base_exp[0]
+                I[1] += int(base_exp[1]) * exp
+            elif base_exp[0] in ['mol', 'mmol', 'umol']:
+                if N[0] != None and base_exp[0] != N[0]:
+                    return False
+                N[0] = base_exp[0]
+                N[1] += int(base_exp[1]) * exp
+            elif base_exp[0] in ['K']:
+                if S[0] != None and base_exp[0] != S[0]:
+                    return False
+                S[0] = base_exp[0]
+                S[1] += int(base_exp[1]) * exp
+            else:
+                return False
+        return True
+    if not parse_parts(parts):
+        return None
     if L[0] == None:
         L[0] = 'm'
     if M[0] == None:
@@ -175,8 +178,7 @@ def parse_unit(unit_str, reserve_name=False):
         S[0] = 'K'
     unit = Unit(L, M, T, I, S, N)
     if reserve_name:
-        unit.name = unit_str_orig
-        parts = unit_str_orig.split('*')
+        unit.name = unit_str
         strs_latex = []
         for p in parts:
             base_exp = p.split('^')

@@ -82,9 +82,6 @@ var SIUnit = ['m', 'kg', 's', 'A', 'K', 'mol'];
 
 function parse_unit(unit) {
     var dimension = [0, 0, 0, 0, 0, 0];
-    for (var i in ExportUnit) {
-        unit = unit.replace(i, ExportUnit[i]);
-    }
     var factors = unit.split('*');
     for (var i = 0; i < factors.length; ++i) {
         var factor = factors[i];
@@ -92,8 +89,12 @@ function parse_unit(unit) {
             continue;
         }
         var parts = factor.split('^');
-        var d = UnitsDimension[parts[0]];
-        if (d === undefined) {
+        var d;
+        if (parts[0] in UnitsDimension) {
+            d = UnitsDimension[parts[0]];
+        } else if (parts[0] in ExportDimension) {
+            d = parse_unit(ExportDimension[parts[0]]);
+        } else {
             return null;
         }
         var exp = 1;

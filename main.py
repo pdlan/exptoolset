@@ -147,7 +147,7 @@ def full_procedure_handler():
         latex = uncertainty.full_procedure(equations, measures, values, uncertainties, units, p)
         return json.dumps({'status':'ok', 'latex':latex})
     except Exception:
-        #traceback.print_exc()
+        traceback.print_exc()
         return json.dumps({'status':'badrequest'}), 400
 
 @app.route('/')
