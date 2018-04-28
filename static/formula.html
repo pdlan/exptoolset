@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>大物公式</title>
+        <link rel="stylesheet" href="static/css/bootstrap.min.css">
+        <script src="static/js/jquery-3.3.1.min.js"></script>
+        <script src="static/js/bootstrap.min.js"></script>
+        <script src="https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <style type="text/css">
+            pre {white-space: pre-wrap; word-wrap: break-word;}
+        </style>
+    </head>
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark box-shadow">
+                <a class="navbar-brand" href="#">大物实验工具集</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="./">主页</a></li>
+                        <li class="nav-item"><a class="nav-link" href="uncertainty.html">测量不确定度计算</a></li>
+                        <li class="nav-item"><a class="nav-link" href="procedure.html">数据处理过程生成</a></li>
+                        <li class="nav-item active"><a class="nav-link" href="formula.html">公式表</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <main role="main" class="container" style="margin-top: 50px;">
+            <div class="row">
+                <div class="offset-md-1 col-md-10">
+                    <table class="table table-responsive">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="width: 20%">实验</th>
+                                <th scope="col" style="width: 40%">公式</th>
+                                <th scope="col" style="width: 40%">Latex代码</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">单摆法测重力加速度</th>
+                                <td>
+                                    $$g=\frac{4\pi^2 l}{T}$$
+                                </td>
+                                <td>
+                                    <pre>g=\frac{4\pi^2 l}{T}</pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">密立根油滴实验</th>
+                                <td>$$q=\frac{1.429 \times 10^{-14}}{U[t_f(1+0.0196\sqrt{t_f})]^{\frac{3}{2}}}$$
+                                    其中\(U\)为平衡电压，\(t_f\)为油滴下落时间。请勿勾选“检查单位”。
+                                </td>
+                                <td>
+                                    <pre>q=\frac{1.429 \times 10^{-14}}{U[t_f(1+0.0196\sqrt{t_f})]^{\frac{3}{2}}}</pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">液体表面张力系数测定</th>
+                                <td>
+                                    $$\sigma=\frac{kx-mg}{2l} \mathrm{(金属丝)}$$
+                                    $$\sigma=\frac{kx-mg}{2\pi d} \mathrm{(金属圈)}$$
+                                    其中x为弹簧破裂时形变量与初始形变量的差    
+                                </td>
+                                <td>
+                                    <pre>\sigma=\frac{kx-mg}{2l}</pre><pre>\sigma=\frac{kx-mg}{\pi d}</pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">落球法测定液体的粘度</th>
+                                <td>
+                                    $$\eta_0=\frac{1}{18}\frac{(\rho-\rho_0)gd^2}{v\left(1+2.4\frac{d}{2R}\right)\left(1+3.3\frac{d}{2h}\right)}$$
+                                    $$\eta_1=\eta_0-\frac{3}{16}dv\rho_0$$
+                                    $$\eta_2=\frac{1}{2}\eta_1\left[1+\sqrt{1+\frac{19}{270}\left(\frac{dv\rho_0}{\eta_1}\right)^2}\right]$$
+                                    雷诺数自行验算
+                                </td>
+                                <td>
+                                    <pre>\eta_0=\frac{1}{18}\frac{(\rho-\rho_0)gd^2}{v\left(1+2.4\frac{d}{2R}\right)\left(1+3.3\frac{d}{2h}\right)}</pre><pre>\eta_1=\eta_0-\frac{3}{16}dv\rho_0</pre><pre>\eta_2=\frac{1}{2}\eta_1\left[1+\sqrt{1+\frac{19}{270}\left(\frac{dv\rho_0}{\eta_1}\right)^2}\right]</pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">卡尺法测定金属圆柱体的密度</th>
+                                <td>
+                                    $$\rho=\frac{4m}{\pi D^2 H}$$   
+                                </td>
+                                <td>
+                                    <pre>\rho=\frac{4m}{\pi D^2 H}</pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">流体静力称横法测定金属圆柱体的密度</th>
+                                <td>
+                                    $$\rho=\frac{m}{m-m_1}\rho_0$$   
+                                </td>
+                                <td>
+                                    <pre>\rho=\frac{m}{m-m_1}\rho_0</pre>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+        </main>
+    </body>
+</html>

@@ -1,3 +1,5 @@
+var api_url = '';
+//var api_url = 'http://120.78.177.94:8000';
 var UnitsForInstrument = {
     'wood_ruler1' : ['cm', 'm', 'mm'],
     'wood_ruler2' : ['cm', 'm', 'mm'],
@@ -60,7 +62,7 @@ function generate() {
         'p' : p
     };
     $.ajax({
-        url : '/measure_uncertainty',
+        url : api_url + '/measure_uncertainty',
         type : 'POST',
         data : JSON.stringify(post_data),
         dataType : 'json',

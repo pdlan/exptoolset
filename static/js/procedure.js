@@ -1,3 +1,5 @@
+var api_url = '';
+//var api_url = 'http://120.78.177.94:8000';
 var equations;
 var free_vars = [];
 var intermediate_vars = [];
@@ -364,7 +366,7 @@ function generate() {
         'check_unit' : check_unit
     };
     $.ajax({
-        url : '/full_procedure',
+        url : api_url + '/full_procedure',
         type : 'POST',
         data : JSON.stringify(post_data),
         dataType : 'json',
@@ -410,7 +412,7 @@ function analyse_equations() {
         'equations' : equations
     };
     $.ajax({
-        url : '/analyse_equations',
+        url : api_url + '/analyse_equations',
         type : 'POST',
         data : JSON.stringify(post_data),
         dataType : 'json',
@@ -518,7 +520,7 @@ $(document).ready(function () {
         $('#equations-input-editor').show();
         $('#editor').addClass('active');
         if (!editor_loaded) {
-            $('#equations-input-editor').load('/static/equationeditor/equationeditor.html', function() {
+            $('#equations-input-editor').load('static/equationeditor/equationeditor.html', function() {
                 onload_editor();
                 editor_loaded = true;
             });

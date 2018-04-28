@@ -2,12 +2,14 @@ import json
 import traceback
 import sympy
 from flask import Flask, request
+from flask_cors import CORS
 import uncertainty
 import unit
 import instrument
 from latex2sympy.process_latex import process_sympy
 
 app = Flask(__name__, static_url_path='/static')
+CORS(app)
 
 @app.route('/analyse_equations', methods=['POST'])
 def analyse_equations_handler():
@@ -161,6 +163,10 @@ def uncertainty_html_handler():
 @app.route('/procedure.html')
 def procedure_html_handler():
     return app.send_static_file('procedure.html')
+
+@app.route('/formula.html')
+def formula_html_handler():
+    return app.send_static_file('formula.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, threaded=True)
